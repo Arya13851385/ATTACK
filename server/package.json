@@ -1,0 +1,13 @@
+{
+  "name": "emergency-alert-broker",
+  "version": "1.0.0",
+  "description": "Minimal on-premise LAN broker for the Intranet Emergency Alert Android app",
+  "main": "broker.js",
+  "scripts": {
+    "start": "node broker.js"
+  },
+  "dependencies": {
+    "bonjour": "^3.5.0",
+    "ws": "^8.17.0"
+  }
+}

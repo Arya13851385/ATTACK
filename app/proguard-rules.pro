@@ -1,0 +1,5 @@
+-keepattributes *Annotation*
+-keepclassmembers class kotlinx.serialization.json.** { *** Companion; }
+-keepclasseswithmembers class com.localnet.emergency.model.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**

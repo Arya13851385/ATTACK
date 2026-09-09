@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>سامانه هشدار اضطراری داخلی</title>
+<meta name="theme-color" content="#121212" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="هشدار اضطراری" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div id="unlockGate" class="unlock-gate">
+  <div style="font-size:48px;">🔔</div>
+  <h1 class="app-title" style="margin:0;">سامانه هشدار اضطراری داخلی</h1>
+  <p style="color:var(--color-text-secondary); font-size:14px; line-height:1.7; max-width:340px;">
+    برای فعال‌سازی صدای هشدار و اتصال به شبکه محلی، لطفاً روی دکمه زیر بزنید.
+    مرورگرها اجازه پخش خودکار صدا را نمی‌دهند، بنابراین این مرحله ضروری است.
+  </p>
+  <button id="unlockBtn" class="btn btn-primary" style="max-width:260px;">شروع نظارت</button>
+</div>
+
+<div id="app" class="hidden">
+  <h1 class="app-title">سامانه هشدار اضطراری داخلی</h1>
+  <p class="subtitle">نسخه وب — فقط شبکه محلی، بدون نیاز به اینترنت</p>
+
+  <div id="statusCard" class="status-card">
+    <span id="statusDot" class="status-dot disconnected"></span>
+    <span id="statusText" class="status-text">قطع — به سرور متصل نیستید</span>
+  </div>
+
+  <div id="alertBanner" class="alert-banner level-white">
+    <p class="label" id="bannerLabel">وضعیت سفید</p>
+    <p class="desc" id="bannerDesc">پایان خطر / وضعیت عادی</p>
+    <p class="meta hidden" id="bannerRoom"></p>
+    <p class="meta hidden" id="bannerNote"></p>
+    <p class="meta hidden" id="bannerSender"></p>
+  </div>
+
+  <p class="hint">با فشار طولانی روی هر دکمه، وضعیت برای همه دستگاه‌های متصل در شبکه ارسال می‌شود</p>
+
+  <div class="trigger-list">
+    <button class="btn btn-red" data-level="RED">اعلام وضعیت قرمز — خطر فوری</button>
+    <button class="btn btn-yellow" data-level="YELLOW">اعلام وضعیت زرد — خطر قریب‌الوقوع</button>
+    <button class="btn btn-white" data-level="WHITE">اعلام پایان خطر (وضعیت سفید)</button>
+  </div>
+
+  <button id="manualServerBtn" class="btn btn-link">تنظیم دستی آدرس سرور</button>
+  <button id="retryBtn" class="btn btn-link">تلاش مجدد برای اتصال</button>
+
+  <p class="footer-note">
+    توجه: برای قابلیت اطمینان کامل در پس‌زمینه (زمانی که صفحه قفل است یا برنامه در پس‌زمینه است)،
+    از اپلیکیشن بومی اندروید استفاده کنید. مرورگرها اتصال را هنگام قفل شدن صفحه ممکن است قطع کنند.
+    این صفحه را باز و روشن نگه دارید.
+  </p>
+</div>
+
+<!-- Confirmation modal (hold-to-confirm) -->
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <h2 id="confirmTitle">تأیید اعلام وضعیت</h2>
+    <p>این وضعیت بلافاصله برای همه دستگاه‌های متصل در شبکه محلی ارسال می‌شود.</p>
+    <div class="field">
+      <label for="roomInput">اتاق / موقعیت (اختیاری)</label>
+      <input id="roomInput" type="text" maxlength="80" />
+    </div>
+    <div class="field">
+      <label for="noteInput">یادداشت کوتاه (اختیاری)</label>
+      <input id="noteInput" type="text" maxlength="200" />
+    </div>
+    <p style="font-size:13px;">برای ارسال، دکمه زیر را نگه دارید</p>
+    <div id="holdButton" class="hold-button">
+      <div class="fill" id="holdFill"></div>
+      <span class="label">نگه دارید برای تأیید نهایی</span>
+    </div>
+    <div class="modal-actions">
+      <button id="cancelConfirmBtn" class="btn btn-secondary" style="width:auto;">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manual server modal -->
+<div id="manualModal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <h2>اتصال دستی به سرور</h2>
+    <div class="field">
+      <label for="hostInput">آدرس سرور (میزبان)</label>
+      <input id="hostInput" type="text" placeholder="192.168.1.10" />
+    </div>
+    <div class="field">
+      <label for="portInput">پورت</label>
+      <input id="portInput" type="number" placeholder="8765" />
+    </div>
+    <div class="modal-actions">
+      <button id="cancelManualBtn" class="btn btn-secondary" style="width:auto;">انصراف</button>
+      <button id="connectManualBtn" class="btn btn-primary" style="width:auto;">اتصال</button>
+    </div>
+  </div>
+</div>
+
+<!-- Full-screen RED takeover -->
+<div id="fullAlertOverlay" class="full-alert-overlay hidden">
+  <div class="icon">⚠</div>
+  <div class="label" id="fullAlertLabel">وضعیت قرمز</div>
+  <div class="desc" id="fullAlertDesc">خطر فوری - اقدام آنی</div>
+  <div class="meta hidden" id="fullAlertRoom"></div>
+  <div class="meta hidden" id="fullAlertNote"></div>
+  <button id="ackBtn" class="ack-btn">متوجه شدم — بستن هشدار</button>
+</div>
+
+<audio id="audioRed" src="assets/audio/alert_red_siren.wav" loop preload="auto"></audio>
+<audio id="audioYellow" src="assets/audio/alert_yellow_chime.wav" preload="auto"></audio>
+<audio id="audioWhite" src="assets/audio/alert_white_calm.wav" preload="auto"></audio>
+
+<script src="js/app.js"></script>
+</body>
+</html>
